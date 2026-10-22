@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: Brutefist Death Review - Diagnostics
+## Notes: Tests combat, health and potion data availability. No survival advice yet.
+## Author: Brigga Brutefist
+## Version: 0.1.0
+## SavedVariables: BrutefistDeathReviewDB
+Recorder.lua
+UI.lua
