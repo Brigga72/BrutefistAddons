@@ -1,6 +1,6 @@
 # Brutefist Addons
 
-Source history for BrutefistCompanion 0.4.2, BrutefistGear 0.6.1 and BrutefistProfessions 0.1.0, imported from the installed beta client on October 21, 2026. Professions 0.2.0 was referenced in a previous chat but is not present in this import.
+Source history for BrutefistCompanion 0.4.2, BrutefistGear 0.6.1 and BrutefistProfessions 0.2.0, imported from the installed beta client on October 21, 2026. Professions 0.2.0 was subsequently recovered from the original ZIP, including Cooking and its regression tests.
 
 ## Update the game
 

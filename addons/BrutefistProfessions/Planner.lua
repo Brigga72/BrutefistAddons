@@ -1,5 +1,5 @@
 local _,P=...
-P.version='0.1.0'
+P.version='0.2.0'
 -- Data adapter: guide's default hide route; estimated crafts, not skill guarantees.
 -- Item IDs keep the route independent of translated material names.
 P.steps={
@@ -14,6 +14,7 @@ P.steps={
  {195,210,21,{[4304]=5,[4291]=2}}, {210,225,15,{[4304]=14,[4291]=4}}}
 P.materials={}
 for _,s in ipairs(P.steps) do for id in pairs(s[4]) do P.materials[id]=true end end
+for id in pairs(P.cookingMat or {}) do P.materials[id]=true end
 function P:Secret(v)
  for _,fn in ipairs({issecretvalue,canaccessvalue}) do
   if type(fn)=='function' then local ok,r=pcall(fn,v);if not ok or (fn==issecretvalue and r) or (fn==canaccessvalue and not r) then return true end end
@@ -29,19 +30,20 @@ function P:Table(v)
  if type(issecrettable)=='function' then local ok,r=pcall(issecrettable,v);if not ok or r then return false end end
  return true
 end
-function P:Skill()
+function P:Skill(professionID)
+ professionID=professionID or 165
  if InCombatLockdown() then return nil,'Check outside combat' end
  if not C_SkillInfo or type(C_SkillInfo.GetNumSkillLines)~='function' or type(C_SkillInfo.GetSkillLineInfo)~='function' then return nil,'Skill API unavailable' end
  local ok,n=pcall(C_SkillInfo.GetNumSkillLines);n=ok and self:Num(n)
  if not n or n<0 or n>200 or n%1~=0 then return nil,'Skill count unavailable' end
  for i=1,n do
   local worked,row=pcall(C_SkillInfo.GetSkillLineInfo,i)
-  if worked and self:Table(row) and self:Num(row.skillID)==165 then
+  if worked and self:Table(row) and self:Num(row.skillID)==professionID then
    local rank,max=self:Num(row.rank),self:Num(row.maxRank)
    if rank and max then return rank,max end
   end
  end
- return nil,'Leatherworking unavailable; expand Skills panel'
+ return nil,'Profession unavailable; expand Skills panel'
 end
 function P:Target(skill)
  for _,n in ipairs({75,150,225,300}) do if skill<n then return n end end
@@ -91,6 +93,7 @@ function P:Append(tip)
  if not ok or self:Secret(link) or type(link)~='string' then return end
  local id=tonumber(link:match('item:(%d+)'))
  if not id or not self.materials[id] then return end
+ if self.cookingMat and self.cookingMat[id] then self:AppendCooking(tip,id);return end
  local skill,err=self:Skill()
  if not skill then tip:AddLine('Profession Planner: '..err,1,0.8,0.4,true);return end
  local target=self:Target(skill)
@@ -134,8 +137,9 @@ f:SetScript('OnEvent',function(_,event,name)
  else P:BankSnapshot() end
 end)
 SLASH_BRUTEFISTPROFESSIONS1='/bprof'
-SlashCmdList.BRUTEFISTPROFESSIONS=function()
+SlashCmdList.BRUTEFISTPROFESSIONS=function(input)
+ if input and input:match('^cooking') then P:CookingCommand(input);return end
  local skill,err=P:Skill()
  DEFAULT_CHAT_FRAME:AddMessage('Profession Planner '..P.version..': '..(skill and ('Leatherworking '..skill..', next milestone '..(P:Target(skill) or 'complete')) or err))
- DEFAULT_CHAT_FRAME:AddMessage('Route: guide default hides, verified guide coverage through 225. Visit bank once, then hover a material. Cooking/Fishing routes pending. '..(P.lastError or ''))
+ DEFAULT_CHAT_FRAME:AddMessage('Leatherworking: default hide route through 225. Cooking: /bprof cooking for recipe choices. Visit bank, then hover ingredients. Fishing progression pending. '..(P.lastError or ''))
 end
