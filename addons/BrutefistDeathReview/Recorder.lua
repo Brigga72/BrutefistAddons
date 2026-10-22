@@ -1,5 +1,5 @@
 local _, D = ...
-D.version = '0.1.1'
+D.version = '0.2.0'
 D.limit, D.maxEvents = 30, 800
 D.potions = {118,858,929,1710,3928,13446,22829,33447}
 D.rows, D.head, D.count = {}, 1, 0
@@ -51,8 +51,8 @@ function D:Call(key,fn,...)
     self:Note(key,'readable return')
     return unpackValues(result,2,result.n)
 end
-function D:Add(kind,text)
-    local row={t=self:Now(),kind=kind,text=text}
+function D:Add(kind,text,data)
+    local row={t=self:Now(),kind=kind,text=text,data=data}
     if self.count < self.maxEvents then
         self.rows[(self.head+self.count-1)%self.maxEvents+1]=row
         self.count=self.count+1
@@ -76,14 +76,19 @@ function D:Sample(reason)
     local hp=self:Call('UnitHealth',UnitHealth,'player')
     local maximum=self:Call('UnitHealthMax',UnitHealthMax,'player')
     local speed=self:Call('GetUnitSpeed',GetUnitSpeed,'player')
-    self:Add('STATE',reason..' hp='..self:Plain(hp)..'/'..self:Plain(maximum)..' speed='..self:Plain(speed))
+    local state={hp=self:Num(hp),maximum=self:Num(maximum),speed=self:Num(speed),combat=self:Context()=='combat',potions={}}
+    self:Add('STATE',reason..' hp='..self:Plain(hp)..'/'..self:Plain(maximum)..' speed='..self:Plain(speed),state)
     for _,id in ipairs(self.potions) do
         local count=self:Call('ItemCount',C_Item and C_Item.GetItemCount or GetItemCount,id,false)
         count=self:Num(count)
+        state.potions[id]={count=count}
         if count and count>0 then
             local fn=C_Container and C_Container.GetItemCooldown or GetItemCooldown
             local start,duration,enabled=self:Call('ItemCooldown',fn,id)
             local usable,noMana=self:Call('ItemUsable',C_Item and C_Item.IsUsableItem or IsUsableItem,id)
+            local potion=state.potions[id]
+            potion.start,potion.duration,potion.enabled=self:Num(start),self:Num(duration),self:Num(enabled)
+            if type(usable)=='boolean' and self:Readable(usable) then potion.usable=usable end
             self:Add('POTION',string.format('id=%d bags=%d cooldownStart=%s duration=%s enabled=%s usable=%s noMana=%s',id,count,self:Plain(start),self:Plain(duration),self:Plain(enabled),self:Plain(usable),self:Plain(noMana)))
         end
     end
@@ -106,7 +111,20 @@ function D:CombatEvent(...)
     if source~=guid and destination~=guid then return end
     local parts={}
     for i=1,math.min(payload.n,25) do parts[#parts+1]=i..'='..self:Plain(payload[i]) end
-    self:Add('COMBAT',table.concat(parts,' '))
+    local data={event=subevent,source=self:Plain(payload[5]),target=self:Plain(payload[9]),incoming=destination==guid,outgoing=source==guid}
+    if subevent=='SWING_DAMAGE' then
+        data.spell='Melee';data.amount=self:Num(payload[12]);data.overkill=self:Num(payload[13])
+    elseif subevent=='ENVIRONMENTAL_DAMAGE' then
+        data.spell=self:Plain(payload[12]);data.amount=self:Num(payload[13]);data.overkill=self:Num(payload[14])
+    else
+        data.spell=self:Plain(payload[13]);data.spellID=self:Num(payload[12])
+        if subevent=='SPELL_DAMAGE' or subevent=='SPELL_PERIODIC_DAMAGE' or subevent=='RANGE_DAMAGE' or subevent=='DAMAGE_SHIELD' or subevent=='DAMAGE_SPLIT' then
+            data.amount=self:Num(payload[15]);data.overkill=self:Num(payload[16])
+        elseif subevent=='SPELL_HEAL' or subevent=='SPELL_PERIODIC_HEAL' then
+            data.heal=self:Num(payload[15]);data.overheal=self:Num(payload[16])
+        elseif subevent=='SPELL_CAST_FAILED' then data.failure=self:Plain(payload[15]) end
+    end
+    self:Add('COMBAT',table.concat(parts,' '),data)
 end
 function D:Report()
     local version,build,_,interface=self:Call('GetBuildInfo',GetBuildInfo)
@@ -132,10 +150,13 @@ function D:Report()
     return table.concat(lines,'\n')
 end
 function D:Save()
-    if self.saved then self.saved.lastReport=self:Report() end
+    if self.saved then
+        self.saved.lastReport=self:Report()
+        if self.Review then self.saved.lastReview=self:Review() end
+    end
 end
 function D:Start()
-    self.rows,self.head,self.count,self.stats,self.snapshot={},1,0,{},nil
+    self.rows,self.head,self.count,self.stats,self.snapshot,self.frozenRows,self.stoppedAt,self.deathAt={},1,0,{},nil,nil,nil,nil
     self.recording=true
     self:Add('MARK','Recording started')
     self:Sample('start')
@@ -144,6 +165,8 @@ end
 function D:Stop(reason)
     if not self.recording then return end
     self:Add('MARK',reason or 'Stopped')
+    self.stoppedAt=self:Now()
+    self.frozenRows=self:ReviewRows()
     self.recording=false
     self.snapshot=self:Timeline()
     self:Save()
@@ -170,7 +193,7 @@ function D:Event(event,...)
     if not self.recording then return end
     self.capabilities[event]='event received'
     if event=='COMBAT_LOG_EVENT_UNFILTERED' then self:CombatEvent(...)
-    elseif event=='PLAYER_DEAD' then self:Stop('PLAYER_DEAD - frozen automatically');self:Print('Death recording saved. /bdeath report after combat.')
+    elseif event=='PLAYER_DEAD' then self.deathAt=self:Now();self:Stop('PLAYER_DEAD - frozen automatically');self:Print('Death review saved. /bdeath report after combat.')
     elseif event=='UNIT_HEALTH' or event=='UNIT_MAXHEALTH' or event:find('^UNIT_SPELLCAST') then
         local unit=...
         if self:Readable(unit) and unit=='player' then

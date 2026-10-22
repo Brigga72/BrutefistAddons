@@ -15,6 +15,7 @@ function GetItemCooldown() return 10,120,1 end
 function IsUsableItem() return true,false end
 function CombatLogGetCurrentEventInfo() return 20,'SWING_DAMAGE',false,'enemy',nil,0,0,'era-player',nil,0,0,12 end
 assert(loadfile('addons/BrutefistDeathReview/Recorder.lua'))('BrutefistDeathReview',D)
+assert(loadfile('addons/BrutefistDeathReview/Analysis.lua'))('BrutefistDeathReview',D)
 assert(loadfile('addons/BrutefistDeathReview/UI.lua'))('BrutefistDeathReview',D)
 D:Event('ADDON_LOADED','BrutefistDeathReview');D:Start()
 D:Event('COMBAT_LOG_EVENT_UNFILTERED');D:Stop('Era test')

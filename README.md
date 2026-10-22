@@ -2,7 +2,7 @@
 
 ## Death Review diagnostic test
 
-BrutefistDeathReview 0.1.1 is an API recorder for the Forever beta and Classic Era, not the finished death-analysis addon. Run the updater, then `/reload`. Type `/bdeath start` before a short fight with a healing potion in your bags. Use the potion when needed, then `/bdeath stop` and `/bdeath report` after combat. Copy the report back to the development chat. No deliberate death is necessary. See addons/BrutefistDeathReview/README.md for limits and commands.
+BrutefistDeathReview 0.2.0 adds a readable fight/death timeline and potential potion windows for the Forever beta and Classic Era. It excludes active cooldowns and does not equate an API usability flag with readiness. Type `/bdeath start` before a short fight, then `/bdeath stop` and `/bdeath report` afterwards. `/bdeath diagnostics` retains the raw API view. No deliberate death is necessary. See addons/BrutefistDeathReview/README.md for limits and commands. Era 1.15.9 recording APIs were verified in a player-supplied report; this new analysis/UI still needs an in-game check and Forever remains unverified.
 
 For Classic Era 1.15.9, use `Update Era Death Review.cmd`. This explicitly chooses the era profile and installs only BrutefistDeathReview; the other Forever addons remain excluded. The normal Update Addons shortcut still uses beta. The first Era install can also be tested with `powershell -NoProfile -File .\Update-Addons.ps1 -Profile era -Local -Preview`.
 

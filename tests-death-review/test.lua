@@ -19,6 +19,7 @@ C_Item={GetItemCount=function(id,includeBank) assert(includeBank==false);return 
 C_Container={GetItemCooldown=function() return 0,0,1 end}
 SlashCmdList={}
 assert(loadfile('addons/BrutefistDeathReview/Recorder.lua'))('BrutefistDeathReview',D)
+assert(loadfile('addons/BrutefistDeathReview/Analysis.lua'))('BrutefistDeathReview',D)
 assert(loadfile('addons/BrutefistDeathReview/UI.lua'))('BrutefistDeathReview',D)
 D:Event('ADDON_LOADED','AnotherAddon');assert(not D.ready)
 D:Event('ADDON_LOADED','BrutefistDeathReview');assert(D.ready)
