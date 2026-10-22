@@ -1,5 +1,9 @@
 # Brutefist Addons
 
+## DoesItDie Classic Era test port
+
+An unofficial Era 1.15.9 adaptation of Joe Greive's MIT-licensed DoesItDie is included under addons/DoesItDie. The original license and exact upstream source revision are preserved there. Use `Update Era Addons.cmd` to update both it and Death Review; `Update Era Death Review.cmd` remains limited to Death Review. This DoesItDie test port is excluded from beta/Forever update profiles. Type `/did` for the original options window and preview. See addons/DoesItDie/ERA-PORT.md for the test checklist and prediction limits. Actual Era testing is pending.
+
 ## Death Review diagnostic test
 
 BrutefistDeathReview 0.2.0 adds a readable fight/death timeline and potential potion windows for the Forever beta and Classic Era. It excludes active cooldowns and does not equate an API usability flag with readiness. Type `/bdeath start` before a short fight, then `/bdeath stop` and `/bdeath report` afterwards. `/bdeath diagnostics` retains the raw API view. No deliberate death is necessary. See addons/BrutefistDeathReview/README.md for limits and commands. Era 1.15.9 recording APIs were verified in a player-supplied report; this new analysis/UI still needs an in-game check and Forever remains unverified.

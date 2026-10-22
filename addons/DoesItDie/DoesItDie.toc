@@ -1,0 +1,21 @@
+## Interface: 11509
+## Title: DoesItDie - Era Test Port
+## Notes: Tracks your DoTs and marks the damage they still have left on your target's health bar, with a kill icon on the portrait when they'll finish it off. Fully customizable look (/did).
+## IconTexture: Interface\AddOns\DoesItDie\icon
+## Author: Joe Greive
+## Version: 0.8.2-era.1
+## SavedVariables: DoesItDieDB
+## X-Upstream: https://github.com/swirllyman/DoesItDie
+
+Locale.lua
+Locale_deDE.lua
+Locale_esES.lua
+Locale_frFR.lua
+Locale_koKR.lua
+DoesItDie.lua
+Display.lua
+Frames.lua
+Options.lua
+Nameplates.lua
+Focus.lua
+Execute.lua

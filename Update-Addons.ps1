@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([switch]$Local, [switch]$Preview, [string]$Profile)
+param([switch]$Local, [switch]$Preview, [string]$Profile, [string[]]$Addon)
 $ErrorActionPreference = 'Stop'
 $config = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'config.json') -Raw | ConvertFrom-Json
 if (!$Profile) { $Profile = $config.activeProfile }
@@ -22,6 +22,10 @@ try {
         $source = Join-Path $roots[0].FullName 'addons'
     }
     $addons = @(Get-ChildItem -LiteralPath $source -Directory)
+    $addons = @($addons | Where-Object {
+        $supportedProfiles = $config.addonProfiles.($_.Name)
+        !$supportedProfiles -or $Profile -in @($supportedProfiles)
+    })
     if ($Profile -eq 'era') {
         $selection = @($config.profileAddons.era)
         if (!$selection.Count -or !$selection[0]) { throw 'Era requires an explicit profileAddons.era list in config.json.' }
@@ -30,27 +34,33 @@ try {
         }
         $addons = @($addons | Where-Object { $_.Name -in $selection })
     }
+    if ($Addon) {
+        foreach ($name in $Addon) {
+            if ($name -notin $addons.Name) { throw "Addon unavailable for profile ${Profile}: $name" }
+        }
+        $addons = @($addons | Where-Object { $_.Name -in $Addon })
+    }
     if (!$addons.Count) { throw 'No addons found.' }
-    foreach ($addon in $addons) {
-        if ($addon.Name -notmatch '^[A-Za-z0-9_-]+$') { throw 'Invalid addon folder name.' }
-        if (!(Test-Path -LiteralPath (Join-Path $addon.FullName ($addon.Name + '.toc')))) { throw "Missing TOC: $($addon.Name)" }
-        if (Get-ChildItem -LiteralPath $addon.FullName -Recurse -Force | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }) { throw 'Linked source files are not supported.' }
+    foreach ($addonDirectory in $addons) {
+        if ($addonDirectory.Name -notmatch '^[A-Za-z0-9_-]+$') { throw 'Invalid addon folder name.' }
+        if (!(Test-Path -LiteralPath (Join-Path $addonDirectory.FullName ($addonDirectory.Name + '.toc')))) { throw "Missing TOC: $($addonDirectory.Name)" }
+        if (Get-ChildItem -LiteralPath $addonDirectory.FullName -Recurse -Force | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }) { throw 'Linked source files are not supported.' }
     }
     $backup = Join-Path $PSScriptRoot ('backups\' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
-    foreach ($addon in $addons) {
-        $target = Join-Path $destination $addon.Name
+    foreach ($addonDirectory in $addons) {
+        $target = Join-Path $destination $addonDirectory.Name
         if (Test-Path -LiteralPath $target) {
             if ((Get-Item -LiteralPath $target).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Linked target not supported: $target" }
             if (Get-ChildItem -LiteralPath $target -Recurse -Force | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }) { throw "Linked target content not supported: $target" }
         }
-        Write-Host "$(if ($Preview) {'Would install'} else {'Installing'}) $($addon.Name) -> $target"
+        Write-Host "$(if ($Preview) {'Would install'} else {'Installing'}) $($addonDirectory.Name) -> $target"
         if (!$Preview) {
             if (Test-Path -LiteralPath $target) {
                 New-Item -ItemType Directory -Path $backup -Force | Out-Null
                 Copy-Item -LiteralPath $target -Destination $backup -Recurse
             }
             New-Item -ItemType Directory -Path $target -Force | Out-Null
-            Get-ChildItem -LiteralPath $addon.FullName -Force | Copy-Item -Destination $target -Recurse -Force
+            Get-ChildItem -LiteralPath $addonDirectory.FullName -Force | Copy-Item -Destination $target -Recurse -Force
         }
     }
     if (!$Preview) { Write-Host "Done. Type /reload in game. Backups (when needed): $backup" }

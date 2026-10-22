@@ -12,3 +12,8 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install lupa==2.8
       - run: python tests-death-review/run.py
+      - run: python tests-doesitdie/test_tracking.py
+      - run: python tests-doesitdie/test_display.py
+      - run: python tests-doesitdie/test_era.py
+      - shell: pwsh
+        run: ./tests-updater/test-profile-selection.ps1 -WorkRoot $env:RUNNER_TEMP

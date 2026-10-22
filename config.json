@@ -8,6 +8,9 @@
     "forever": "D:\\Battle.net\\World of Warcraft\\_forever_\\addon"
   },
   "profileAddons": {
-    "era": ["BrutefistDeathReview"]
+    "era": ["BrutefistDeathReview", "DoesItDie"]
+  },
+  "addonProfiles": {
+    "DoesItDie": ["era"]
   }
 }
