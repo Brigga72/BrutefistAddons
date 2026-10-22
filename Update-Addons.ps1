@@ -22,6 +22,14 @@ try {
         $source = Join-Path $roots[0].FullName 'addons'
     }
     $addons = @(Get-ChildItem -LiteralPath $source -Directory)
+    if ($Profile -eq 'era') {
+        $selection = @($config.profileAddons.era)
+        if (!$selection.Count -or !$selection[0]) { throw 'Era requires an explicit profileAddons.era list in config.json.' }
+        foreach ($name in $selection) {
+            if ($name -notin $addons.Name) { throw "Configured Era addon not found: $name" }
+        }
+        $addons = @($addons | Where-Object { $_.Name -in $selection })
+    }
     if (!$addons.Count) { throw 'No addons found.' }
     foreach ($addon in $addons) {
         if ($addon.Name -notmatch '^[A-Za-z0-9_-]+$') { throw 'Invalid addon folder name.' }

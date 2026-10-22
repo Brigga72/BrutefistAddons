@@ -4,6 +4,10 @@
   "activeProfile": "beta",
   "profiles": {
     "beta": "D:\\Battle.net\\World of Warcraft\\_classic_beta_\\Interface\\AddOns",
+    "era": "D:\\Battle.net\\World of Warcraft\\_classic_era_\\Interface\\AddOns",
     "forever": "D:\\Battle.net\\World of Warcraft\\_forever_\\addon"
+  },
+  "profileAddons": {
+    "era": ["BrutefistDeathReview"]
   }
 }

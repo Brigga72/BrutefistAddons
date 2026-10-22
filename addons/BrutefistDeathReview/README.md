@@ -1,4 +1,6 @@
-# Brutefist Death Review diagnostics 0.1.0
+# Brutefist Death Review diagnostics 0.1.1
+
+Supports an Era test installation using the Vanilla manifest for interface 11509. The regular manifest targets Forever interface 16001. Both clients use the same Lua recorder. Era results validate that client only; Forever must be tested separately. Use `Update Era Death Review.cmd` to install/update only this diagnostic addon in Classic Era.
 
 This is the API investigation stage, not the completed death analysis addon. It records the player's combat events, health, movement speed and a fixed list of common healing potion IDs. It does not issue advice or automate actions. No spell cooldown or aura analysis is implemented yet.
 

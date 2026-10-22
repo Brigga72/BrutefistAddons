@@ -2,7 +2,9 @@
 
 ## Death Review diagnostic test
 
-BrutefistDeathReview 0.1.0 is an API recorder for the Forever beta, not the finished death-analysis addon. Run the updater, then `/reload`. Type `/bdeath start` before a short fight with a healing potion in your bags. Use the potion when needed, then `/bdeath stop` and `/bdeath report` after combat. Copy the report back to the development chat. No deliberate death is necessary. See addons/BrutefistDeathReview/README.md for limits and commands.
+BrutefistDeathReview 0.1.1 is an API recorder for the Forever beta and Classic Era, not the finished death-analysis addon. Run the updater, then `/reload`. Type `/bdeath start` before a short fight with a healing potion in your bags. Use the potion when needed, then `/bdeath stop` and `/bdeath report` after combat. Copy the report back to the development chat. No deliberate death is necessary. See addons/BrutefistDeathReview/README.md for limits and commands.
+
+For Classic Era 1.15.9, use `Update Era Death Review.cmd`. This explicitly chooses the era profile and installs only BrutefistDeathReview; the other Forever addons remain excluded. The normal Update Addons shortcut still uses beta. The first Era install can also be tested with `powershell -NoProfile -File .\Update-Addons.ps1 -Profile era -Local -Preview`.
 
 Lua 5.1 mocked tests: install Python package `lupa==2.8`, then run `python tests-death-review/run.py` from this repository. This checks the recorder and existing Professions regression suite. Actual Forever APIs and UI still require in-game verification.
 

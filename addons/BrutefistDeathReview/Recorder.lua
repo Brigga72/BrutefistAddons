@@ -1,5 +1,5 @@
 local _, D = ...
-D.version = '0.1.0'
+D.version = '0.1.1'
 D.limit, D.maxEvents = 30, 800
 D.potions = {118,858,929,1710,3928,13446,22829,33447}
 D.rows, D.head, D.count = {}, 1, 0

@@ -1,0 +1,8 @@
+## Interface: 11509
+## Title: Brutefist Death Review - Diagnostics
+## Notes: Classic Era test recorder for combat, health and potion data.
+## Author: Brigga Brutefist
+## Version: 0.1.1
+## SavedVariables: BrutefistDeathReviewDB
+Recorder.lua
+UI.lua
