@@ -1,0 +1,11 @@
+## Interface: 16001
+## Title: Brutefist Combat Companion
+## Notes: Standalone main-hand swing HUD and API diagnostics for Forever.
+## Author: Brigga Brutefist
+## Version: 0.4.2
+## SavedVariables: BrutefistCompanionDB
+Core.lua
+Swing.lua
+HUD.lua
+Diagnostics.lua
+Bootstrap.lua

@@ -1,0 +1,6 @@
+## Interface: 16001
+## Title: Brutefist Profession Planner
+## Notes: Estimated Leatherworking materials to the next skill milestone.
+## Version: 0.1.0
+## SavedVariables: BrutefistProfessionsDB
+Planner.lua

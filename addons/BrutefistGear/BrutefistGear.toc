@@ -1,0 +1,18 @@
+## Interface: 16001
+## Title: Brutefist Gear Advisor
+## Notes: Experimental talent-aware item stat comparisons for two-handed Enhancement.
+## Author: Brigga Brutefist
+## Version: 0.6.1
+## SavedVariables: BrutefistGearDB
+Core.lua
+Items.lua
+Verdict.lua
+Tooltips.lua
+Probe.lua
+SkillProbe.lua
+Calibration.lua
+Questing.lua
+Weapons.lua
+WeaponSkills.lua
+Adaptive.lua
+Bootstrap.lua

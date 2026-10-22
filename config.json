@@ -1,0 +1,9 @@
+{
+  "repository": "Brigga72/BrutefistAddons",
+  "branch": "main",
+  "activeProfile": "beta",
+  "profiles": {
+    "beta": "D:\\Battle.net\\World of Warcraft\\_classic_beta_\\Interface\\AddOns",
+    "forever": "D:\\Battle.net\\World of Warcraft\\_forever_\\addon"
+  }
+}
